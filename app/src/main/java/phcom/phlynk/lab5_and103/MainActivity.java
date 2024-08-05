@@ -97,7 +97,24 @@ public class MainActivity extends AppCompatActivity implements DistributorAdapte
                     distributor.setName(name);
                     httpRequest.callAPI()
                             .addDistributor(distributor)
-                            .enqueue(responseDistributorAPI);
+                            .enqueue(new Callback<Response<Boolean>>() {
+                                @Override
+                                public void onResponse(Call<Response<Boolean>> call, retrofit2.Response<Response<Boolean>> response) {
+                                    if (response.isSuccessful()) {
+                                        fetchAPI(); // Reload list distributor
+                                    } else {
+                                        // Handle unsuccessful response
+                                        Toast.makeText(MainActivity.this, "Failed to add distributor", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Response<Boolean>> call, Throwable t) {
+                                    // Handle failure
+                                    Log.e(TAG, "onFailure: " + t.getMessage());
+                                    Toast.makeText(MainActivity.this, "Failed to add distributor", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                     alertDialog.dismiss();
                 }
             }
@@ -133,27 +150,6 @@ public class MainActivity extends AppCompatActivity implements DistributorAdapte
         }
     };
 
-    Callback<Response<ArrayList<Distributor>>> responseDistributorAPI = new Callback<Response<ArrayList<Distributor>>>() {
-        @Override
-        public void onResponse(Call<Response<ArrayList<Distributor>>> call, retrofit2.Response<Response<ArrayList<Distributor>>> response) {
-            if (response.isSuccessful()) {
-                if (response.body().getStatus() == 200) {
-                    list = response.body().getData();
-                    getData();
-                } else {
-                    Toast.makeText(MainActivity.this, "Failed to update list", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(MainActivity.this, "Failed to update list", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        public void onFailure(Call<Response<ArrayList<Distributor>>> call, Throwable t) {
-            Log.e(TAG, "onFailure: " + t.getMessage());
-        }
-    };
-
     private void showDialogEdit(Distributor distributor) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit distributor");
@@ -174,7 +170,24 @@ public class MainActivity extends AppCompatActivity implements DistributorAdapte
                     distributor1.setName(name);
                     httpRequest.callAPI()
                             .updateDistributor(distributor.getId(), distributor1)
-                            .enqueue(responseDistributorAPI);
+                            .enqueue(new Callback<Response<Boolean>>() {
+                                @Override
+                                public void onResponse(Call<Response<Boolean>> call, retrofit2.Response<Response<Boolean>> response) {
+                                    if (response.isSuccessful()) {
+                                        fetchAPI(); // Reload list distributor
+                                    } else {
+                                        // Handle unsuccessful response
+                                        Toast.makeText(MainActivity.this, "Failed to update distributor", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Response<Boolean>> call, Throwable t) {
+                                    // Handle failure
+                                    Log.e(TAG, "onFailure: " + t.getMessage());
+                                    Toast.makeText(MainActivity.this, "Failed to update distributor", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                     alertDialog.dismiss();
                 }
             }
@@ -190,7 +203,24 @@ public class MainActivity extends AppCompatActivity implements DistributorAdapte
         builder.setPositiveButton("Yes", (dialog, which) -> {
             httpRequest.callAPI()
                     .deleteDistributor(distributor.getId())
-                    .enqueue(responseDistributorAPI);
+                    .enqueue(new Callback<Response<Boolean>>() {
+                        @Override
+                        public void onResponse(Call<Response<Boolean>> call, retrofit2.Response<Response<Boolean>> response) {
+                            if (response.isSuccessful()) {
+                                fetchAPI(); // Reload list distributor
+                            } else {
+                                // Handle unsuccessful response
+                                Toast.makeText(MainActivity.this, "Failed to delete distributor", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Response<Boolean>> call, Throwable t) {
+                            // Handle failure
+                            Log.e(TAG, "onFailure: " + t.getMessage());
+                            Toast.makeText(MainActivity.this, "Failed to delete distributor", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
         builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
         builder.show();
